@@ -2,6 +2,7 @@ using Backend.Services;
 using Microsoft.AspNetCore.Mvc;
 using BCrypt.Net;
 using QRCoder;
+using Backend.Models;
 
 namespace Backend.Controllers
 {
@@ -44,7 +45,7 @@ namespace Backend.Controllers
 
             var hashedOtp = BCrypt.Net.BCrypt.HashPassword(newOtp);
 
-      var expiresAt = DateTime.Now.AddHours(1);
+            var expiresAt = DateTime.Now.AddHours(1);
 
             await _mfaUserService.UpdateOtpHashAsync(user.Niklog, hashedOtp, expiresAt);
 
@@ -63,6 +64,35 @@ namespace Backend.Controllers
                 niklog = user.Niklog,
                 message = "User ditemukan dan OTP berhasil dikirim (berlaku 1 jam).",
                 OtpLink = qrCodeDataUrl
+            });
+        }
+        [HttpPost("verify-otp")]
+        public async Task<IActionResult> VerifyOtp([FromBody] VerifyOtpRequest request)
+        {
+            if (string.IsNullOrWhiteSpace(request.OtpInput))
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    message = "OTP wajib diisi."
+                });
+            }
+
+            var userData = await _mfaUserService.GetUserByValidOtpAsync(request.OtpInput);
+
+            if (userData == null)
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    message = "OTP salah atau sudah kedaluwarsa."
+                });
+            }
+
+            return Ok(new
+            {
+                message = "OTP benar! Verifikasi berhasil.",
+                niklog = userData.Niklog
             });
         }
     }
