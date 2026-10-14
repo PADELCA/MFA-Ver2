@@ -54,27 +54,27 @@ namespace Backend.Services
         }
 
   
-        public async Task<bool> UpdateOtpHashAsync(string niklog, string hashedOtp, DateTime expiresAt)
-        {
-            string? connectionString = _configuration.GetConnectionString("MfaConnection");
+public async Task<bool> UpdateOtpHashAsync(string niklog, string hashedOtp, DateTime expiresAt)
+{
+    string? connectionString = _configuration.GetConnectionString("MfaConnection");
 
-            using var connection = new SqlConnection(connectionString);
-            await connection.OpenAsync();
+    using var connection = new SqlConnection(connectionString);
+    await connection.OpenAsync();
 
-            const string query = @"
-                UPDATE dbo.userr 
-                SET OtpHash = @OtpHash, 
-                    ExpiresAt = @ExpiresAt 
-                WHERE Niklog = @Niklog;
-            ";
+    const string query = @"
+        UPDATE dbo.userr 
+        SET OtpHash = @OtpHash, 
+            ExpiresAt = @ExpiresAt 
+        WHERE Niklog = @Niklog;
+    ";
 
-            using var command = new SqlCommand(query, connection);
-            command.Parameters.AddWithValue("@OtpHash", hashedOtp);
-            command.Parameters.AddWithValue("@ExpiresAt", expiresAt);
-            command.Parameters.AddWithValue("@Niklog", niklog);
+    using var command = new SqlCommand(query, connection);
+    command.Parameters.AddWithValue("@OtpHash", hashedOtp);
+    command.Parameters.AddWithValue("@ExpiresAt", expiresAt);
+    command.Parameters.AddWithValue("@Niklog", niklog);
 
-            int rowsAffected = await command.ExecuteNonQueryAsync();
-            return rowsAffected > 0;
-        }
+    int rowsAffected = await command.ExecuteNonQueryAsync();
+    return rowsAffected > 0;
+}
     }
 }

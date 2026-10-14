@@ -1,6 +1,7 @@
 using Backend.Services;
 using Microsoft.AspNetCore.Mvc;
 using BCrypt.Net;
+using QRCoder;
 
 namespace Backend.Controllers
 {
@@ -43,15 +44,25 @@ namespace Backend.Controllers
 
             var hashedOtp = BCrypt.Net.BCrypt.HashPassword(newOtp);
 
-            await _mfaUserService.UpdateOtpHashAsync(user.Niklog, hashedOtp, DateTime.Now.AddHours(1)); // OTP berlaku 5 menit
+      var expiresAt = DateTime.Now.AddHours(1);
 
+            await _mfaUserService.UpdateOtpHashAsync(user.Niklog, hashedOtp, expiresAt);
+
+            using var qrGenerator = new QRCodeGenerator();
+
+            using var qrCodeData = qrGenerator.CreateQrCode(newOtp, QRCodeGenerator.ECCLevel.Q);
+            using var qrCode = new PngByteQRCode(qrCodeData);
+            byte[] qrCodeBytes = qrCode.GetGraphic(20); // Ukuran pixel QR
+
+            string base64String = Convert.ToBase64String(qrCodeBytes);
+            string qrCodeDataUrl = $"data:image/png;base64,{base64String}";
 
             return Ok(new
             {
                 id = user.Id,
                 niklog = user.Niklog,
-                message = "User ditemukan dan OTP berhasil dikirim.",
-                encryptedOtp = hashedOtp 
+                message = "User ditemukan dan OTP berhasil dikirim (berlaku 1 jam).",
+                OtpLink = qrCodeDataUrl
             });
         }
     }
