@@ -15,7 +15,7 @@ namespace Backend.Services
 
         public async Task<MfaUser?> GetByNiklogAsync(string niklog)
         {
-            // Pastikan nama connection string sesuai dengan di appsettings.json Anda (misal: "MfaConnection")
+    
             string? connectionString = _configuration.GetConnectionString("MfaConnection");
 
             if (string.IsNullOrWhiteSpace(connectionString))
@@ -53,7 +53,7 @@ namespace Backend.Services
             };
         }
 
-        // Method update OTP hash dan expired time (cukup gunakan 1 method ini saja)
+  
         public async Task<bool> UpdateOtpHashAsync(string niklog, string hashedOtp, DateTime expiresAt)
         {
             string? connectionString = _configuration.GetConnectionString("MfaConnection");

@@ -6,7 +6,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
-// 2. TAMBAHKAN BAGIAN INI SECARA LENGKAP
 builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo
@@ -24,7 +23,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger(c =>
     {
-        c.SerializeAsV2 = true; // Tambahkan baris ini
+        c.SerializeAsV2 = true; 
     });
 
     app.UseSwaggerUI(c =>

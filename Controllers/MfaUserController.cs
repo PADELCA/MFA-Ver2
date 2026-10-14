@@ -37,21 +37,21 @@ namespace Backend.Controllers
                 });
             }
 
-            // 1. Generate OTP random 6 digit
+
             var newOtp = Random.Shared.Next(100000, 999999).ToString();
 
-            // 2. Enkripsi/Hash OTP menggunakan BCrypt
+
             var hashedOtp = BCrypt.Net.BCrypt.HashPassword(newOtp);
 
             await _mfaUserService.UpdateOtpHashAsync(user.Niklog, hashedOtp, DateTime.Now.AddHours(1)); // OTP berlaku 5 menit
 
-            // 3. Kembalikan data lengkap beserta hash OTP di dalam response JSON
+
             return Ok(new
             {
                 id = user.Id,
                 niklog = user.Niklog,
                 message = "User ditemukan dan OTP berhasil dikirim.",
-                encryptedOtp = hashedOtp // Kode terenkripsi yang nantinya bisa di-convert jadi QR oleh frontend
+                encryptedOtp = hashedOtp 
             });
         }
     }
