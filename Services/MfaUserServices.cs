@@ -48,7 +48,7 @@ namespace Backend.Services
 
             return new MfaUser
             {
-                Id = reader.GetGuid(reader.GetOrdinal("Id")),
+                Id = reader.GetInt32(reader.GetOrdinal("Id")),
                 Niklog = reader.GetString(reader.GetOrdinal("Niklog"))
             };
         }
@@ -102,7 +102,7 @@ public async Task<MfaUserOtpValidationDto?> GetUserByValidOtpAsync(string otpInp
         {
             return new MfaUserOtpValidationDto
             {
-                Id = reader.GetGuid(reader.GetOrdinal("Id")),
+                Id = reader.GetInt32(reader.GetOrdinal("Id")),
                 Niklog = reader.GetString(reader.GetOrdinal("Niklog")),
                 OtpHash = otpHash,
                 ExpiresAt = reader.GetDateTime(reader.GetOrdinal("ExpiresAt"))
